@@ -1,0 +1,16 @@
+decl
+	integer status;
+enddecl
+integer main()
+{
+	//creating the file
+	status = Create("sumit.dat");
+	print(status);
+	//opening the file
+	status = Open("sumit.dat");
+	print(status);
+	// trying to delete the opened file
+	status = Delete("sumit.dat");
+	print(status);
+	return 0;
+}

@@ -1,0 +1,84 @@
+alias physicalSP S0;
+physicalSP = ([PTBR + 2 * (SP/512)] * 512) + (SP % 512);
+
+alias sysCallNo S1;
+sysCallNo = [physicalSP - 1];
+
+//........................Implementation of Write......................
+
+if (sysCallNo == 5) then
+  alias desPID S2;
+  alias wordToWrite S3;
+  wordToWrite = [physicalSP - 3]; //Getting arguments from stack
+  desPID = -1*[physicalSP - 4];
+
+  //Checking if desPID is valid is valid
+
+  alias i S4;
+  i = 0;
+  while (i < 32) do
+    if (i == desPID) then
+      break;
+    endif;
+    i = i + 1;
+  endwhile;
+  if (i == 32) then
+    print ("Invalid PID");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+//check whether the des process exists or not
+
+alias desPCB S5;
+desPCB=READY_LIST+32*desPID;
+if([desPCB+1]==0) then
+    print ("des process does not exist");
+    [physicalSP - 2] = -1;
+    ireturn;
+  endif;
+
+	alias PID S4;
+  	PID = (PTBR - 1024)/8;
+	alias counter S6;
+	counter = 15;		
+	while (counter < 30) do
+		if([desPCB + counter + 0] == -1 && [desPCB + counter + 1] == -1) then
+				break;
+		endif;
+		counter=counter+2;
+	endwhile;
+	if(counter==30) then
+		print("No space");
+		[physicalSP - 2] = -1;
+    		ireturn;
+	else
+		alias cont1 S10;
+		cont1=counter;
+		counter = 15;		
+		while (counter < 30) do
+			if([READY_LIST+32*PID+0+counter]==-1) then
+				break;
+			endif;
+			counter=counter+2;
+		endwhile;
+		if(counter==30) then
+		print("No space");
+		[physicalSP - 2] = -1;
+    		ireturn;
+		else
+			[desPCB + cont1 + 0]=PID;
+			[desPCB + cont1 + 1]=-1;
+			[READY_LIST+32*PID+counter+0]=desPID;
+			[READY_LIST+32*PID+counter+1]=wordToWrite;
+			//SP = SP + 3;   //to handle the case when the stack is empty
+			alias physicalSP S7;
+			physicalSP = ([PTBR + 2*(SP/512)]*512) + (SP % 512);
+			[physicalSP - 1] = 13;
+			[physicalSP - 3]=desPID;	
+			inline "JMP 11776";
+		endif;
+	endif;
+endif;
+[physicalSP - 2] =-1;
+ireturn;

@@ -1,0 +1,9 @@
+decl
+	integer status;
+enddecl
+integer main()
+{
+	status = Open("guru.dat");
+	print(status);
+	return 0;
+}

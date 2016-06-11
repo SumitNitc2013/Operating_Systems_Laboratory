@@ -1,0 +1,26 @@
+integer main(){
+	string a,b,c;
+	
+	integer pid,f,e;
+        f=1;
+	while(f==1) do
+		print("Welcome");
+		read(a);
+                if(a=="exit") then
+			Exit();	
+		endif;
+		pid=Fork();
+		e=Getpid();
+		if(pid != -2) then
+			e=Wait(pid); //parent process returns pid of child
+			print("Waiting Done");
+		endif;
+		if(pid == -2) then
+			e=Exec(a);
+			if(e==-1) then
+				print("Error occured !!!Can't Run");
+			endif;
+		endif;
+	endwhile;
+	return 0;
+}

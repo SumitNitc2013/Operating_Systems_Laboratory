@@ -1,0 +1,3 @@
+//intrrupt 7 does nothing but halting the machine
+halt;
+

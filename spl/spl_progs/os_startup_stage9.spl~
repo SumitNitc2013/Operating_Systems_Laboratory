@@ -1,0 +1,99 @@
+print "os start..";
+
+load(7,1); //exception handler
+load(8,2);
+
+load(9,3);//Timer 
+load(10,4);
+
+load(11,5);//INT 1
+load(12,6);
+
+load(13,7);//INT 2
+load(14,8);
+
+load(15,9);//INT 3
+load(16,10);
+
+load(17,11);//INT 4
+load(18,12);
+
+load(19,13);//INT 5
+load(20,14);
+
+load(21,15);//INT 6
+load(22,16);
+
+load(23,17); //INT 7
+load(24,18);
+
+
+//set memory free list
+alias ctr S0; 
+ctr=0;
+while(ctr<=24) do
+	[1280 + ctr]=1;
+	ctr=ctr+1;
+endwhile;
+
+ctr=0;
+while(ctr<32) do             // initialise all the pcbs to 0 terminated
+	[READY_LIST + 32*ctr + 1 ]=0;
+	ctr=ctr+1;
+endwhile;
+
+[READY_LIST + 0]=0; //pid of int=0 READY_LIST is 1536
+load(25,21);//load init pgm
+load(26,22);
+load(27,23);
+
+[1280 + 25]=1;
+[1280 + 26]=1;
+[1280 + 27]=1;
+[1280 + 28]=1;
+
+ctr=29;
+while(ctr<64) do             // initialise all other entries in memoryfree list as 0
+	[1280 + ctr]=0;
+	ctr=ctr+1;
+endwhile;
+
+PTBR=1024;
+PTLR=4;
+
+[PTBR + 0]=25;        
+[PTBR + 1]="01";
+[PTBR + 2]=26;
+[PTBR + 3]="01";
+[PTBR + 4]=27;
+[PTBR + 5]="01";
+[PTBR + 6]=28;
+[PTBR + 7]="01";
+
+[READY_LIST + 1]=2;
+
+[READY_LIST + 2] = 3*512
+
+SP=3*512;
+
+[28*512]=0;
+
+load(5,19);//load FAT
+load(6,20);//load disk free
+
+ctr=0;
+while(ctr<128) do                  // initialising system wide open file table
+	[FILE_TABLE + ctr + 0]=-1;
+	[FILE_TABLE + ctr + 1]=0;
+	ctr=ctr+2;
+endwhile;
+
+ctr=0;
+while(ctr<16) do            // initialising per process open file table
+	[READY_LIST + 15 + ctr  + 0]=-1;
+	[READY_LIST + 15 + ctr  + 1]=-1;
+	ctr=ctr+2;
+endwhile;
+
+print "OS END";
+ireturn;
